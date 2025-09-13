@@ -1,15 +1,6 @@
-import { emit } from 'process';
-import * as readline from 'readline';
-
-interface Person {
-    id: string;
-    identifier: string;
-    identifierType: 'cpf' | 'phone' | 'email';
-    age: number
-    name?: string;
-    timestamp: Date;
-    position: number;
-}
+import { Validators } from './validators';
+import { EIdentifierType } from './enums/identifier-type.enum';
+import { Person } from './interfaces/person.interface';
 
 interface QueueState {
     priorityQueue: Person[];
@@ -38,8 +29,7 @@ interface FinishResult {
     message: string;
 }
 
-// Classe principal do sistema de fila
-class QueueManager {
+export class QueueManager {
     private state: QueueState;
 
     constructor() {
@@ -57,7 +47,6 @@ class QueueManager {
         console.log('Digite queueManager.help() para ver os comandos disponíveis.\n');
     }
 
-    // Método de ajuda
     public help(): void {
         console.log(`
 📋 COMANDOS DISPONÍVEIS:
@@ -87,17 +76,15 @@ class QueueManager {
         `);
     }
 
-    // Verifica se a pessoa já está na fila
     private isAlreadyInQueue(identifier: string): boolean {
         return this.state.queue.some(person => person.identifier === identifier) ||
             ((this.state.currentAttendee && this.state.currentAttendee.identifier === identifier) || false);
     }
 
-    // Adiciona pessoa à fila
-    public addPerson(identifier: string, identifierType: 'cpf' | 'phone' | 'email', age: number, name?: string): AddResult {
+    public addPerson(identifier: string, identifierType: EIdentifierType, age: number, name?: string): AddResult {
         console.log(`\n➕ Tentando adicionar à fila: ${identifier} (${identifierType})`);
 
-        const validation = this.validateIdentifier(identifier, identifierType);
+        const validation = Validators.validateIdentifier(identifier, identifierType);
 
         if (!validation.valid) {
             console.log(`❌ Erro: ${validation.message}`);
@@ -132,7 +119,6 @@ class QueueManager {
         };
     }
 
-    // Chama próxima pessoa
     public callNext(): CallResult {
         console.log('\n🔔 Chamando próximo da fila...');
 
@@ -173,7 +159,6 @@ class QueueManager {
         };
     }
 
-    // Finaliza atendimento atual
     public finishCurrent(): FinishResult {
         console.log('\n✅ Finalizando atendimento...');
 
@@ -193,7 +178,6 @@ class QueueManager {
         return { success: true, message: 'Atendimento finalizado' };
     }
 
-    // Mostra a fila atual
     public showQueue(): void {
         console.log('\n📋 FILA ATUAL:');
         console.log('═'.repeat(60));
@@ -216,7 +200,6 @@ class QueueManager {
         });
     }
 
-    // Mostra a fila prioritária
     public showPriorityQueue(): void {
         console.log('\n📋 FILA PRIORITÁRIA ATUAL:');
         console.log('═'.repeat(60));
@@ -239,7 +222,6 @@ class QueueManager {
         });
     }
 
-    // Mostra quem está sendo atendido
     public showCurrent(): void {
         console.log('\n👤 ATENDIMENTO ATUAL:');
         console.log('═'.repeat(40));
@@ -255,7 +237,6 @@ class QueueManager {
         console.log(`⏰ Entrada: ${person.timestamp.toLocaleString()}`);
     }
 
-    // Mostra estatísticas
     public showStats(): void {
         console.log('\n📊 ESTATÍSTICAS:');
         console.log('═'.repeat(30));
@@ -267,7 +248,6 @@ class QueueManager {
         console.log(`📈 Total processado: ${this.state.attendedCount + (this.state.currentAttendee ? 1 : 0)}`);
     }
 
-    // Procura pessoa na fila
     public findPerson(identifier: string): void {
         console.log(`\n🔍 Procurando: ${identifier}`);
 
@@ -302,7 +282,6 @@ class QueueManager {
         console.log(`⏰ Entrada: ${person.timestamp.toLocaleString()}`);
     }
 
-    // Getters públicos
     public getQueueLength(): number {
         return this.state.queue.length;
     }
@@ -315,7 +294,6 @@ class QueueManager {
         return this.state.attendedCount;
     }
 
-    // Método para limpar a fila (útil para testes)
     public clearQueue(): void {
         console.log('\n🗑️  Limpando fila...');
         this.state.queue = [];
@@ -323,7 +301,6 @@ class QueueManager {
         console.log('✅ Fila limpa (mantendo contador de atendidos)');
     }
 
-    // Método para resetar tudo
     public reset(): void {
         console.log('\n🔄 Resetando sistema...');
         this.state = {
@@ -338,37 +315,3 @@ class QueueManager {
         console.log('✅ Sistema resetado completamente');
     }
 }
-
-// Instância global do gerenciador
-const queueManager = new QueueManager();
-
-// Exporta para uso em módulos (opcional)
-export { QueueManager, queueManager };
-
-// Exemplos de uso (descomente para testar):
-
-console.log('\n🧪 EXECUTANDO EXEMPLOS:');
-
-// Adiciona algumas pessoas
-queueManager.addPerson('123.456.789-00', 'cpf', 20, 'João Silva');
-queueManager.addPerson('11999887766', 'phone', 56, 'Maria Santos');
-queueManager.addPerson('pedro@email.com', 'email', 95, 'Pedro Costa');
-queueManager.addPerson('ana@email.com', 'email', 20);
-
-// Mostra a fila
-queueManager.showQueue();
-queueManager.showStats();
-
-// Chama primeiro
-queueManager.callNext();
-queueManager.showCurrent();
-
-// Finaliza e chama próximo
-queueManager.finishCurrent();
-queueManager.callNext();
-
-// Procura alguém
-queueManager.findPerson('pedro@email.com');
-
-// Mostra estado final
-queueManager.showStats();

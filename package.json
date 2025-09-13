@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "start": "node main.ts"
+    "start": "npx tsx main.ts"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",

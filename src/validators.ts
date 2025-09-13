@@ -1,3 +1,5 @@
+import { EIdentifierType } from "./enums/identifier-type.enum";
+
 export class Validators{
     private static validateCPF(cpf: string): boolean {
         const cleanCPF = cpf.replace(/\D/g, '');
@@ -32,21 +34,21 @@ export class Validators{
         return emailRegex.test(email);
     }
 
-    public static validateIdentifier(identifier: string, type: 'cpf' | 'phone' | 'email'): { valid: boolean; message?: string } {
+    public static validateIdentifier(identifier: string, type: EIdentifierType): { valid: boolean; message?: string } {
         switch (type) {
-            case 'cpf':
+            case EIdentifierType.CPF:
                 const validatedCpf = this.validateCPF(identifier)
                 return {
                     valid: validatedCpf,
                     message: validatedCpf ? undefined : 'CPF inválido'
                 };
-            case 'phone':
+            case EIdentifierType.PHONE:
                 const validatedPhone = this.validatePhone(identifier)
                 return {
                     valid: validatedPhone,
                     message: validatedPhone ? undefined : 'Número de celular inválido'
                 };
-            case 'email':
+            case EIdentifierType.EMAIL:
                 const validatedEmail = this.validateEmail(identifier)
                 return {
                     valid: validatedEmail,
