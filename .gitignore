@@ -1,0 +1,33 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-store/
+
+# Build artifacts
+dist/
+build/
+*.js
+*.js.map
+*.d.ts
+!dist/index.d.ts # Example: if you want to include a specific declaration file
+
+# IDE and OS specific files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+
+# Test coverage reports
+coverage/
+
+# Log files
+*.log
+
+# Other temporary files
+tmp/
