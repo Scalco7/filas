@@ -30,9 +30,10 @@ interface FinishResult {
 }
 
 export class QueueManager {
+    static #instance: QueueManager;
     private state: QueueState;
 
-    constructor() {
+    private constructor() {
         this.state = {
             priorityQueue: [],
             queue: [],
@@ -42,9 +43,14 @@ export class QueueManager {
             attendedPriorityCount: 0,
             nextPosition: 1
         };
+    }
 
-        console.log('🎯 Sistema de Controle de Filas inicializado!');
-        console.log('Digite queueManager.help() para ver os comandos disponíveis.\n');
+    public static get instance(): QueueManager {
+        if (!QueueManager.#instance) {
+            QueueManager.#instance = new QueueManager();
+        }
+
+        return QueueManager.#instance;
     }
 
     public help(): void {
@@ -144,7 +150,7 @@ export class QueueManager {
             this.state.attendedPriorityCount = 0;
         }
 
-        if(this.state.currentAttendee) this.state.attendeeHistory.push(this.state.currentAttendee);
+        if (this.state.currentAttendee) this.state.attendeeHistory.push(this.state.currentAttendee);
         this.state.currentAttendee = nextPerson;
 
         console.log(`📢 CHAMANDO: ${nextPerson.name || nextPerson.identifier}`);
@@ -283,7 +289,7 @@ export class QueueManager {
     }
 
     public getQueueLength(): number {
-        return this.state.queue.length;
+        return this.state.queue.length + this.state.priorityQueue.length;
     }
 
     public getCurrentAttendee(): Person | null {
@@ -296,6 +302,7 @@ export class QueueManager {
 
     public clearQueue(): void {
         console.log('\n🗑️  Limpando fila...');
+        this.state.priorityQueue = [];
         this.state.queue = [];
         this.state.currentAttendee = null;
         console.log('✅ Fila limpa (mantendo contador de atendidos)');
