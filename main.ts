@@ -2,39 +2,64 @@ import { EIdentifierType } from './src/enums/identifier-type.enum';
 import { QueueManager } from './src/queue-manager'
 import * as readlineSync from 'readline-sync';
 
-const queueManager = QueueManager.instance;
+type MenuOptions = '0' | '1' | '2' | '3' | '4' | '5' | '6';
 
-// Exemplos de uso (descomente para testar):
+async function menu(): Promise<boolean> {
+    const option: MenuOptions = readlineSync.question(`
+0 - Sair
+1 - Ajuda
+2 - Adicionar a fila
+3 - Chamar proximo
+4 - Finalizar atendimento
+5 - Mostrar fila
+6 - Mostrar atendimento atual
+Escolha: `) as MenuOptions;
 
-// console.log('\n🧪 EXECUTANDO EXEMPLOS:');
+    switch (option) {
+        case '0':
+            return false;
+        case '1':
+            QueueManager.instance.help();
+            break
+        case '2':
+            const identifierType = readlineSync.question('Digite o tipo de identificador (cpf, celular, email): ');
+            const identifier = readlineSync.question('Digite o identificador: ');
+            const ageText = readlineSync.question('Digite a idade: ');
+            const age = parseInt(ageText);
+            if (isNaN(age)) {
+                console.log('A idade deve ser um número');
+                return true;
+            }
+            const name = readlineSync.question('Digite o nome: ');
 
-// // Adiciona algumas pessoas
-// queueManager.addPerson('123.456.789-00', EIdentifierType.CPF, 20, 'João Silva');
-// queueManager.addPerson('11999887766', EIdentifierType.PHONE, 56, 'Maria Santos');
-// queueManager.addPerson('pedro@email.com', EIdentifierType.EMAIL, 95, 'Pedro Costa');
-// queueManager.addPerson('ana@email.com', EIdentifierType.EMAIL, 20);
-
-// // Mostra a fila
-// queueManager.showQueue();
-// queueManager.showStats();
-
-// // Chama primeiro
-// queueManager.callNext();
-// queueManager.showCurrent();
-
-// // Finaliza e chama próximo
-// queueManager.finishCurrent();
-// queueManager.callNext();
-
-// // Procura alguém
-// queueManager.findPerson('pedro@email.com');
-
-// // Mostra estado final
-// queueManager.showStats();
-
-async function menu() {
-    console.log('=== Bem vindo ao gerenciador de filas ===');
-    const option: string = readlineSync.question('What is your name? ');
+            QueueManager.instance.addPerson(identifier, identifierType as EIdentifierType, age, name);
+            break
+        case '3':
+            QueueManager.instance.callNext();
+            break
+        case '4':
+            QueueManager.instance.finishCurrent();
+            break
+        case '5':
+            QueueManager.instance.showQueue();
+            break
+        case '6':
+            QueueManager.instance.showCurrent();
+            break
+        default:
+            console.log('Opção inválida');
+            break
+    }
+    return true;
 }
 
-menu()
+async function main(){
+    console.log('=== Bem vindo ao gerenciador de filas ===');
+    while (true) {
+        const continueWhile = await menu();
+        if (!continueWhile) break;
+    }
+    console.log('=== Até a próxima vez usando filas ===');
+}
+
+main()

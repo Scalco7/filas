@@ -116,7 +116,7 @@ export class QueueManager {
         else this.state.queue.push(person);
 
         console.log(`✅ ${name || identifier} adicionado(a) à fila na posição ${person.position}`);
-        console.log(`📊 Total na fila: ${this.state.queue.length}`);
+        console.log(`📊 Total na fila: ${this.getQueueLength()}`);
 
         return {
             success: true,
@@ -156,7 +156,7 @@ export class QueueManager {
         console.log(`📢 CHAMANDO: ${nextPerson.name || nextPerson.identifier}`);
         console.log(`📋 Identificador: ${nextPerson.identifierType.toUpperCase()}: ${nextPerson.identifier}`);
         console.log(`⏰ Entrada na fila: ${nextPerson.timestamp.toLocaleString()}`);
-        console.log(`📊 Restam na fila: ${this.state.queue.length}`);
+        console.log(`📊 Restam na fila: ${this.getQueueLength()}`);
 
         return {
             success: true,
@@ -185,47 +185,45 @@ export class QueueManager {
     }
 
     public showQueue(): void {
-        console.log('\n📋 FILA ATUAL:');
-        console.log('═'.repeat(60));
-
-        if (this.state.queue.length === 0) {
-            console.log('   Fila vazia');
-            return;
-        }
-
-        this.state.queue.forEach((person, index) => {
-            const position = index + 1;
-            const isNext = position === 1;
-            const prefix = isNext ? '👉' : '  ';
-            const name = person.name || person.identifier;
-            const time = person.timestamp
-
-            console.log(`${prefix} ${position}º - ${name}`);
-            console.log(`     ${person.identifierType.toUpperCase()}: ${person.identifier} | ${time}`);
-            if (index < this.state.queue.length - 1) console.log('');
-        });
-    }
-
-    public showPriorityQueue(): void {
         console.log('\n📋 FILA PRIORITÁRIA ATUAL:');
         console.log('═'.repeat(60));
 
         if (this.state.priorityQueue.length === 0) {
             console.log('   Fila vazia');
-            return;
+        }
+        else {
+            this.state.priorityQueue.forEach((person, index) => {
+                const position = index + 1;
+                const isNext = position === 1;
+                const prefix = isNext ? '👉' : '  ';
+                const name = person.name || person.identifier;
+                const time = person.timestamp
+
+                console.log(`${prefix} ${position}º - ${name}`);
+                console.log(`     ${person.identifierType.toUpperCase()}: ${person.identifier} | ${time}`);
+                if (index < this.state.priorityQueue.length - 1) console.log('');
+            });
         }
 
-        this.state.priorityQueue.forEach((person, index) => {
-            const position = index + 1;
-            const isNext = position === 1;
-            const prefix = isNext ? '👉' : '  ';
-            const name = person.name || person.identifier;
-            const time = person.timestamp
+        console.log('\n📋 FILA ATUAL:');
+        console.log('═'.repeat(60));
 
-            console.log(`${prefix} ${position}º - ${name}`);
-            console.log(`     ${person.identifierType.toUpperCase()}: ${person.identifier} | ${time}`);
-            if (index < this.state.priorityQueue.length - 1) console.log('');
-        });
+        if (this.state.queue.length === 0) {
+            console.log('   Fila vazia');
+        }
+        else {
+            this.state.queue.forEach((person, index) => {
+                const position = index + 1;
+                const isNext = position === 1;
+                const prefix = isNext ? '👉' : '  ';
+                const name = person.name || person.identifier;
+                const time = person.timestamp
+
+                console.log(`${prefix} ${position}º - ${name}`);
+                console.log(`     ${person.identifierType.toUpperCase()}: ${person.identifier} | ${time}`);
+                if (index < this.state.queue.length - 1) console.log('');
+            });
+        }
     }
 
     public showCurrent(): void {
